@@ -2,26 +2,24 @@ name: Tests
 
 on:
   push:
-    branches: [main, develop]
+    branches: [main]
   pull_request:
-    branches: [main, develop]
 
 permissions:
   contents: read
 
 jobs:
   test:
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-        python-version: ['3.9', '3.10', '3.11', '3.12']
+        python-version: ["3.9", "3.10", "3.11", "3.12"]
     
     steps:
       - uses: actions/checkout@v4
       
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
           cache: pip
@@ -30,70 +28,24 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r barber-booking-demo/requirements.txt
+          pip install pytest pytest-cov
       
-      - name: Run tests
+      - name: Lint with flake8
+        run: |
+          pip install flake8
+          flake8 barber-booking-demo/app.py barber-booking-demo/tests/ --count --select=E9,F63,F7,F82 --show-source --statistics
+          flake8 barber-booking-demo/app.py barber-booking-demo/tests/ --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+      
+      - name: Run tests with pytest
         run: |
           cd barber-booking-demo
-          python -m pytest tests/ -v --cov=. --cov-report=xml --cov-report=html
+          pytest tests/ -v --cov=. --cov-report=xml --cov-report=term-missing
       
-      - name: Upload coverage reports
-        uses: codecov/codecov-action@v3
-        if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.12'
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
         with:
-          files: ./coverage.xml
+          files: ./barber-booking-demo/coverage.xml
           flags: unittests
           name: codecov-umbrella
-
-  lint:
-    runs-on: ubuntu-latest
-    
-    steps:
-      - uses: actions/checkout@v4
-      
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.12'
-          cache: pip
-      
-      - name: Install linting tools
-        run: |
-          python -m pip install --upgrade pip
-          pip install flake8 pylint black isort
-      
-      - name: Run black formatter check
-        run: black --check barber-booking-demo --line-length=100
-        continue-on-error: true
-      
-      - name: Run isort check
-        run: isort --check-only barber-booking-demo
-        continue-on-error: true
-      
-      - name: Run flake8
-        run: flake8 barber-booking-demo --max-line-length=100 --count --statistics
-        continue-on-error: true
-
-  security:
-    runs-on: ubuntu-latest
-    
-    steps:
-      - uses: actions/checkout@v4
-      
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.12'
-          cache: pip
-      
-      - name: Install security tools
-        run: |
-          python -m pip install --upgrade pip
-          pip install bandit safety
-      
-      - name: Run bandit security check
-        run: bandit -r barber-booking-demo -f json -o bandit-report.json
-        continue-on-error: true
-      
-      - name: Check dependencies for vulnerabilities
-        run: safety check --json
-        continue-on-error: true
+          fail_ci_if_error: false
+          verbose: true

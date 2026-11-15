@@ -1,5 +1,9 @@
 # Corner Chair local booking test
 
+[![Tests](https://github.com/AB00999/corner-chair/workflows/Tests/badge.svg)](https://github.com/AB00999/corner-chair/actions/workflows/tests.yml)
+[![Code Quality](https://github.com/AB00999/corner-chair/workflows/Code%20Quality/badge.svg)](https://github.com/AB00999/corner-chair/actions/workflows/quality.yml)
+[![codecov](https://codecov.io/gh/AB00999/corner-chair/branch/main/graph/badge.svg)](https://codecov.io/gh/AB00999/corner-chair)
+
 This is a local-only prototype for a fictional barbershop. It has test accounts,
 one example chair, 30-minute appointment slots, and simulated payment choices.
 No actual booking, payment processing, refunds, or payment details are involved.
