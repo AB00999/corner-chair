@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}{{ "Create a test account" if register else "Sign in" }}{% endblock %}
+{% block content %}
+<div class="auth">
+    <p class="eyebrow">Customer booking test</p>
+    <h1>{{ "Make yourself at home." if register else "Welcome back." }}</h1>
+    <p class="lead">This is a local practice account. Do not use a real password or personal information.</p>
+    <div class="card">
+        <h2>{{ "Create a test account" if register else "Sign in" }}</h2>
+        <form method="post">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+            <div class="field">
+                <label for="username">Username</label>
+                <input id="username" name="username" autocomplete="username" minlength="3" maxlength="32" required>
+            </div>
+            <div class="field">
+                <label for="password">Test password</label>
+                <input id="password" name="password" type="password" autocomplete="{{ 'new-password' if register else 'current-password' }}" minlength="12" maxlength="128" required>
+                {% if register %}<p class="help">At least 12 characters. Choose a password you do not use elsewhere.</p>{% endif %}
+            </div>
+            {% if register %}
+            <div class="field">
+                <label for="confirm_password">Confirm test password</label>
+                <input id="confirm_password" name="confirm_password" type="password" autocomplete="new-password" minlength="12" maxlength="128" required>
+            </div>
+            {% endif %}
+            <button class="button" type="submit">{{ "Create account" if register else "Sign in" }}</button>
+        </form>
+        {% if register %}<p class="small">Already have an account? <a href="{{ url_for('login') }}">Sign in</a>.</p>
+        {% else %}<p class="small">New here? <a href="{{ url_for('register') }}">Create a test account</a>.</p>{% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex, nofollow">
+    <title>{% block title %}{% endblock %} | Corner Chair test</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; background: #f5f0e5; color: #20231f; font: 16px/1.6 "Segoe UI", Arial, sans-serif; }
+        a { color: #8a422b; text-underline-offset: 3px; }
+        a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid #d78358; outline-offset: 3px; }
+        .banner { margin: 0; padding: 10px 20px; background: #d7b08e; color: #281d16; font-size: .84rem; font-weight: 700; text-align: center; }
+        header { padding: 20px 24px; background: #191c19; color: #fffaf0; }
+        .nav { width: min(100%, 1050px); margin: auto; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+        .brand { color: #fffaf0; font: 700 1.3rem Georgia, serif; text-decoration: none; }
+        .nav-links { display: flex; align-items: center; flex-wrap: wrap; gap: 18px; }
+        .nav-links a, .nav-links button { color: #fffaf0; font: inherit; font-size: .9rem; }
+        .nav-links form { margin: 0; }
+        .nav-links button { padding: 0; border: 0; background: none; text-decoration: underline; cursor: pointer; }
+        main { width: min(100% - 32px, 1050px); margin: 0 auto; padding: 52px 0 70px; }
+        h1, h2, h3 { font-family: Georgia, serif; line-height: 1.15; }
+        h1 { margin: 0 0 12px; font-size: clamp(2.4rem, 6vw, 4rem); letter-spacing: -.04em; }
+        h2 { font-size: 1.6rem; }
+        .eyebrow { color: #8a422b; font-size: .75rem; font-weight: 800; letter-spacing: .13em; text-transform: uppercase; }
+        .lead { max-width: 650px; color: #625e54; }
+        .card { padding: clamp(22px, 4vw, 36px); border: 1px solid #d7cebe; background: #fffcf5; }
+        .auth { max-width: 520px; }
+        .grid { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, .8fr); gap: 24px; align-items: start; }
+        label, legend { display: block; margin-bottom: 6px; font-weight: 700; }
+        input:not([type=radio]), select { width: 100%; min-height: 46px; padding: 10px; border: 1px solid #8c8274; border-radius: 0; background: white; color: #20231f; font: inherit; }
+        .field { margin-bottom: 18px; }
+        .help { margin: 6px 0 0; color: #625e54; font-size: .88rem; }
+        fieldset { margin: 0 0 20px; padding: 0; border: 0; }
+        .choices { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+        .choice { display: flex; align-items: flex-start; gap: 9px; margin: 0; padding: 12px; border: 1px solid #d7cebe; cursor: pointer; }
+        .choice input { margin-top: 6px; accent-color: #8a422b; }
+        .choice span { display: block; }
+        .choice-with-image { display: flex; flex-direction: column; align-items: center; text-align: center; margin: 0; padding: 12px; border: 1px solid #d7cebe; cursor: pointer; }
+        .choice-with-image input { margin-bottom: 8px; accent-color: #8a422b; }
+        .choice-with-image img { width: 100%; max-width: 120px; height: 120px; object-fit: cover; border-radius: 4px; margin-bottom: 8px; }
+        .choice-with-image span { display: block; }
+        .choice small { display: block; color: #625e54; font-weight: 400; }
+        .button { display: inline-flex; min-height: 48px; align-items: center; justify-content: center; padding: 11px 20px; border: 1px solid #8a422b; background: #8a422b; color: #fffaf0; font: 700 .9rem "Segoe UI", Arial, sans-serif; cursor: pointer; text-decoration: none; }
+        .button:hover { background: #6d3220; }
+        .flash { padding: 12px 16px; border: 1px solid #a68d77; background: #fff7e9; }
+        .flash.error { border-color: #a55335; }
+        .appointment { padding: 14px 0; border-top: 1px solid #d7cebe; }
+        .appointment p { margin: 3px 0; }
+        .small { color: #625e54; font-size: .9rem; }
+        footer { padding: 24px; background: #191c19; color: #e8dccb; text-align: center; font-size: .85rem; }
+        @media (max-width: 700px) { .grid, .choices { grid-template-columns: 1fr; } main { padding-top: 36px; } }
+    </style>
+</head>
+<body>
+    <p class="banner">Local test only. Use a test password. No real bookings or payments.</p>
+    <header>
+        <nav class="nav" aria-label="Main navigation">
+            <a class="brand" href="{{ url_for('home') }}">CC &nbsp; Corner Chair</a>
+            <div class="nav-links">
+                <a href="{{ url_for('home') }}">Shop concept</a>
+                {% if session.get('user_id') %}
+                <a href="{{ url_for('book') }}">My appointments</a>
+                <form action="{{ url_for('logout') }}" method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><button type="submit">Sign out</button></form>
+                {% else %}
+                <a href="{{ url_for('login') }}">Sign in</a>
+                {% endif %}
+            </div>
+        </nav>
+    </header>
+    <main>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}<p class="flash {{ category }}" role="status">{{ message }}</p>{% endfor %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+    </main>
+    <footer>Corner Chair is a fictional portfolio concept. This test is not a real booking service.</footer>
+</body>
+</html>

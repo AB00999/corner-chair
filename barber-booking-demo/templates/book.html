@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}Book a test appointment{% endblock %}
+{% block content %}
+<p class="eyebrow">Your chair awaits</p>
+<h1>Find your next look.</h1>
+<p class="lead">Welcome, {{ session.username }}. Pick an example service and time to try the booking experience.</p>
+<div class="grid">
+    <section class="card" aria-labelledby="book-heading">
+        <h2 id="book-heading">Book a test appointment</h2>
+        <form method="post">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+            <fieldset>
+                <legend>1. Choose a service</legend>
+                <div class="choices">
+                    {% for key, (name, price) in services.items() %}
+                    <label class="choice-with-image">
+                        <input type="radio" name="service" value="{{ key }}" required>
+                        <img src="/static/service-{{ key }}.png" alt="{{ name }}">
+                        <span>{{ name }}<small>Example price: ${{ price }}</small></span>
+                    </label>
+                    {% endfor %}
+                </div>
+            </fieldset>
+            <div class="field">
+                <label for="date">2. Choose a date</label>
+                <input id="date" name="date" type="date" min="{{ today }}" required>
+                <p class="help">Example hours: Tuesday-Friday 9 AM-6 PM, Saturday 9 AM-5 PM. Closed Sunday and Monday.</p>
+            </div>
+            <div class="field">
+                <label for="time">3. Choose a time</label>
+                <select id="time" name="time" required>
+                    <option value="">Select a time</option>
+                    {% for time in times %}<option value="{{ time }}">{{ time }}</option>{% endfor %}
+                </select>
+                <p class="help">One example chair; each test appointment takes 30 minutes. Saturday's last slot is 4:30 PM.</p>
+            </div>
+            <fieldset>
+                <legend>4. Choose a simulated payment method</legend>
+                <div class="choices">
+                    {% for method in payment_methods %}
+                    <label class="choice"><input type="radio" name="payment" value="{{ method }}" required><span>{{ method }}<small>Simulation only</small></span></label>
+                    {% endfor %}
+                </div>
+            </fieldset>
+            <p class="small">Example policy: one-time, non-refundable payment. This is a simulation: no money is charged and no payment details are collected.</p>
+            <button class="button" type="submit">Confirm test appointment</button>
+        </form>
+    </section>
+    <section class="card" aria-labelledby="appointments-heading">
+        <h2 id="appointments-heading">Your test appointments</h2>
+        <p class="small">Only appointments for your test account appear here.</p>
+        {% for appointment in appointments %}
+        <article class="appointment">
+            <h3>{{ appointment.service }}</h3>
+            <p>{{ appointment.appointment_date }} at {{ appointment.appointment_time }}</p>
+            <p>${{ appointment.price }} &middot; {{ appointment.payment_method }} simulation</p>
+            <p class="small">Test only. No payment taken.</p>
+        </article>
+        {% else %}
+        <p class="small">No appointments yet. Choose a service to get started.</p>
+        {% endfor %}
+    </section>
+</div>
+{% endblock %}
